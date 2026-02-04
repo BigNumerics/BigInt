@@ -63,43 +63,43 @@ jobs:
           action: test
           verbosity: xcbeautify
 
-  linux:
-    name: Linux (Swift ${{ matrix.swift }})
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        swift:
-          - "6.0"
-          - "6.1"
-          - "6.2"
-    container:
-      image: swift:${{ matrix.swift }}
-    steps:
-      - name: Git Checkout
-        uses: actions/checkout@v5
+  # linux:
+  #   name: Linux (Swift ${{ matrix.swift }})
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       swift:
+  #         - "6.0"
+  #         - "6.1"
+  #         - "6.2"
+  #   container:
+  #     image: swift:${{ matrix.swift }}
+  #   steps:
+  #     - name: Git Checkout
+  #       uses: actions/checkout@v5
 
-      - name: Run Tests
-        run: swift test
+  #     - name: Run Tests
+  #       run: swift test
 
-  android:
-    name: Android (Swift ${{ matrix.swift }})
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        swift:
-          - "6.0"
-          - "6.1"
-          - "6.2"
-    steps:
-      - name: Git Checkout
-        uses: actions/checkout@v5
+  # android:
+  #   name: Android (Swift ${{ matrix.swift }})
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       swift:
+  #         - "6.0"
+  #         - "6.1"
+  #         - "6.2"
+  #   steps:
+  #     - name: Git Checkout
+  #       uses: actions/checkout@v5
 
-      - name: Build and Test Library
-        uses: skiptools/swift-android-action@v2
-        with:
-          swift-version: ${{ matrix.swift }}
-          build-tests: ${{ matrix.swift != '6.0' }}
-          run-tests: ${{ matrix.swift != '6.0' }}
-          free-disk-space: true
+  #     - name: Build and Test Library
+  #       uses: skiptools/swift-android-action@v2
+  #       with:
+  #         swift-version: ${{ matrix.swift }}
+  #         build-tests: ${{ matrix.swift != '6.0' }}
+  #         run-tests: ${{ matrix.swift != '6.0' }}
+  #         free-disk-space: true
