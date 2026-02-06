@@ -17,7 +17,7 @@ concurrency:
 jobs:
   apple:
     name: ${{ matrix.platform }} (Swift ${{ matrix.swift }})
-    runs-on: macos-26
+    runs-on: macos-15
     strategy:
       fail-fast: false
       matrix:
