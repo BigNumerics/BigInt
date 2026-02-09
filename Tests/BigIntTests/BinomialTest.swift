@@ -5,25 +5,25 @@
 //  Created by Leif Ibsen on 26/05/2022.
 //
 
-import XCTest
+import Testing
 @testable import BigInt
 
-class BinomialTest: XCTestCase {
+@Suite struct BinomialTests {
 
-    func doTest(_ n: Int) {
+    func checkBinomial(_ n: Int) {
         for k in 0 ... n {
-            XCTAssertEqual(BInt.binomial(n, k), BInt.factorial(n) / (BInt.factorial(k) * BInt.factorial(n - k)))
+            #expect(BInt.binomial(n, k) == BInt.factorial(n) / (BInt.factorial(k) * BInt.factorial(n - k)))
         }
     }
 
-    func test1() {
-        XCTAssertEqual(BInt.binomial(0, 0), BInt.ONE)
-        XCTAssertEqual(BInt.binomial(1, 0), BInt.ONE)
-        XCTAssertEqual(BInt.binomial(1, 1), BInt.ONE)
-        XCTAssertEqual(BInt.binomial(1000, 0), BInt.ONE)
-        XCTAssertEqual(BInt.binomial(1000, 1000), BInt.ONE)
+    @Test func binomialMatchesFactorial() {
+        #expect(BInt.binomial(0, 0) == BInt.ONE)
+        #expect(BInt.binomial(1, 0) == BInt.ONE)
+        #expect(BInt.binomial(1, 1) == BInt.ONE)
+        #expect(BInt.binomial(1000, 0) == BInt.ONE)
+        #expect(BInt.binomial(1000, 1000) == BInt.ONE)
         for n in 0 ... 500 {
-            doTest(n)
+            checkBinomial(n)
         }
     }
 

@@ -5,81 +5,81 @@
 //  Created by Leif Ibsen on 28/06/2022.
 //
 
-import XCTest
+import Testing
 @testable import BigInt
 
-class FractionTest: XCTestCase {
-    
-    func doTestInit(_ n: Int, _ d: Int) {
-        XCTAssertEqual(BFraction(n, d), BFraction(BInt(n), BInt(d)))
-        XCTAssertEqual(BFraction(n, d), BFraction(n, BInt(d)))
-        XCTAssertEqual(BFraction(n, d), BFraction(BInt(n), d))
+@Suite struct FractionTests {
+
+    func checkInit(_ n: Int, _ d: Int) {
+        #expect(BFraction(n, d) == BFraction(BInt(n), BInt(d)))
+        #expect(BFraction(n, d) == BFraction(n, BInt(d)))
+        #expect(BFraction(n, d) == BFraction(BInt(n), d))
     }
-    
-    func testInit() {
-        doTestInit(0, 1)
-        doTestInit(1, 1)
-        doTestInit(-1, 1)
-        doTestInit(0, -1)
-        doTestInit(1, -1)
-        doTestInit(-1, -1)
-        doTestInit(Int.max, Int.max)
-        doTestInit(Int.max, Int.min)
-        doTestInit(Int.min, Int.max)
-        doTestInit(Int.min, Int.min)
+
+    @Test func initialization() {
+        checkInit(0, 1)
+        checkInit(1, 1)
+        checkInit(-1, 1)
+        checkInit(0, -1)
+        checkInit(1, -1)
+        checkInit(-1, -1)
+        checkInit(Int.max, Int.max)
+        checkInit(Int.max, Int.min)
+        checkInit(Int.min, Int.max)
+        checkInit(Int.min, Int.min)
         for _ in 0 ..< 10 {
             let n = BInt(bitWidth: 100)
             let d = BInt(bitWidth: 100) + 1
             let f1 = BFraction(n, d)
-            XCTAssertEqual(f1.numerator.gcd(f1.denominator), BInt.ONE)
-            XCTAssert(f1.denominator.isPositive)
+            #expect(f1.numerator.gcd(f1.denominator) == BInt.ONE)
+            #expect(f1.denominator.isPositive)
             let f2 = BFraction(0, d)
-            XCTAssertEqual(f2.numerator, BInt.ZERO)
-            XCTAssertEqual(f2.denominator, BInt.ONE)
+            #expect(f2.numerator == BInt.ZERO)
+            #expect(f2.denominator == BInt.ONE)
         }
         for _ in 0 ..< 10 {
             let d = Double.random(in: -100.0 ... 100.0)
             let f = BFraction(d)!
-            XCTAssertEqual(f.numerator.gcd(f.denominator), BInt.ONE)
-            XCTAssert(f.denominator.isPositive)
-            XCTAssert(f.abs <= 100)
+            #expect(f.numerator.gcd(f.denominator) == BInt.ONE)
+            #expect(f.denominator.isPositive)
+            #expect(f.abs <= 100)
         }
-        XCTAssertNil(BFraction(0.0 / 0.0))
-        XCTAssertNil(BFraction(1.0 / 0.0))
-        XCTAssertEqual(BFraction(0.1)!, BFraction(
+        #expect(BFraction(0.0 / 0.0) == nil)
+        #expect(BFraction(1.0 / 0.0) == nil)
+        #expect(BFraction(0.1)! == BFraction(
             BInt("1000000000000000055511151231257827021181583404541015625")!, BInt(10) ** 55))
-        XCTAssertEqual(BFraction(0.1)!, BFraction(3602879701896397, 36028797018963968))
-        XCTAssertTrue(BFraction(0.0)!.isZero)
-        XCTAssertTrue(BFraction(-0.0)!.isZero)
+        #expect(BFraction(0.1)! == BFraction(3602879701896397, 36028797018963968))
+        #expect(BFraction(0.0)!.isZero)
+        #expect(BFraction(-0.0)!.isZero)
     }
-    
-    func testCompare() {
+
+    @Test func comparison() {
         for _ in 0 ..< 10 {
             let n = BInt(bitWidth: 100)
             let d = BInt(bitWidth: 100)
             let g = n.gcd(d)
             let f = BFraction(n, d)
             let x = BFraction(0.1)!
-            XCTAssertTrue(f == BFraction(n / g, d / g))
-            XCTAssertTrue(f < f + x)
-            XCTAssertTrue(f > f - x)
+            #expect(f == BFraction(n / g, d / g))
+            #expect(f < f + x)
+            #expect(f > f - x)
         }
-        XCTAssertTrue(BFraction(1, 10) < BFraction(0.1)!)
+        #expect(BFraction(1, 10) < BFraction(0.1)!)
     }
-    
-    func testRounding() {
-        XCTAssertTrue(BFraction.ZERO.round() == 0)
-        XCTAssertTrue(BFraction.ZERO.truncate() == 0)
-        XCTAssertTrue(BFraction.ZERO.ceil() == 0)
-        XCTAssertTrue(BFraction.ZERO.floor() == 0)
-        XCTAssertTrue(BFraction.ONE.round() == 1)
-        XCTAssertTrue(BFraction.ONE.truncate() == 1)
-        XCTAssertTrue(BFraction.ONE.ceil() == 1)
-        XCTAssertTrue(BFraction.ONE.floor() == 1)
-        XCTAssertTrue(BFraction(-1, 1).round() == -1)
-        XCTAssertTrue(BFraction(-1, 1).truncate() == -1)
-        XCTAssertTrue(BFraction(-1, 1).ceil() == -1)
-        XCTAssertTrue(BFraction(-1, 1).floor() == -1)
+
+    @Test func rounding() {
+        #expect(BFraction.ZERO.round() == 0)
+        #expect(BFraction.ZERO.truncate() == 0)
+        #expect(BFraction.ZERO.ceil() == 0)
+        #expect(BFraction.ZERO.floor() == 0)
+        #expect(BFraction.ONE.round() == 1)
+        #expect(BFraction.ONE.truncate() == 1)
+        #expect(BFraction.ONE.ceil() == 1)
+        #expect(BFraction.ONE.floor() == 1)
+        #expect(BFraction(-1, 1).round() == -1)
+        #expect(BFraction(-1, 1).truncate() == -1)
+        #expect(BFraction(-1, 1).ceil() == -1)
+        #expect(BFraction(-1, 1).floor() == -1)
         for _ in 0 ..< 1000 {
             let n = BInt(bitWidth: 100)
             let d = BInt(bitWidth: 100) + 1
@@ -93,32 +93,28 @@ class FractionTest: XCTestCase {
             let ceil2 = f2.ceil()
             let floor1 = f1.floor()
             let floor2 = f2.floor()
-            XCTAssertTrue(round1 == ceil1 || round1 == floor1)
-            XCTAssertTrue(round2 == ceil2 || round2 == floor2)
-            XCTAssertTrue(trunc1 == floor1)
-            XCTAssertTrue(trunc2 == ceil2)
-            XCTAssertTrue(ceil1 >= round1)
-            XCTAssertTrue(ceil1 >= trunc1)
-            XCTAssertTrue(ceil1 >= floor1)
-            XCTAssertTrue(floor1 <= round1)
-            XCTAssertTrue(floor1 <= trunc1)
-            XCTAssertTrue(floor1 <= ceil1)
-            XCTAssertTrue((round1 - f1).abs < 1)
-            XCTAssertTrue((round2 - f2).abs < 1)
-            XCTAssertTrue((trunc1 - f1).abs < 1)
-            XCTAssertTrue((trunc2 - f2).abs < 1)
-            XCTAssertTrue((ceil1 - f1).abs < 1)
-            XCTAssertTrue((ceil2 - f2).abs < 1)
-            XCTAssertTrue((floor1 - f1).abs < 1)
-            XCTAssertTrue((floor2 - f2).abs < 1)
+            #expect(round1 == ceil1 || round1 == floor1)
+            #expect(round2 == ceil2 || round2 == floor2)
+            #expect(trunc1 == floor1)
+            #expect(trunc2 == ceil2)
+            #expect(ceil1 >= round1)
+            #expect(ceil1 >= trunc1)
+            #expect(ceil1 >= floor1)
+            #expect(floor1 <= round1)
+            #expect(floor1 <= trunc1)
+            #expect(floor1 <= ceil1)
+            #expect((round1 - f1).abs < 1)
+            #expect((round2 - f2).abs < 1)
+            #expect((trunc1 - f1).abs < 1)
+            #expect((trunc2 - f2).abs < 1)
+            #expect((ceil1 - f1).abs < 1)
+            #expect((ceil2 - f2).abs < 1)
+            #expect((floor1 - f1).abs < 1)
+            #expect((floor2 - f2).abs < 1)
         }
     }
-    
-    func testArithmetic() {
-        // (a + b) * c = a * c + b * c
-        // (a - b) * c = a * c - b * c
-        // (a + b) / c = a / c + b / c
-        // (a - b) / c = a / c - b / c
+
+    @Test func arithmetic() {
         for _ in 0 ..< 1000 {
             let na = BInt(bitWidth: 200)
             let da = BInt(bitWidth: 200) + 1
@@ -129,111 +125,116 @@ class FractionTest: XCTestCase {
             let fa = BFraction(na, da)
             let fb = BFraction(nb, db)
             let fc = BFraction(nc, dc)
-            XCTAssertEqual((fa + fb) * fc, fa * fc + fb * fc)
-            XCTAssertEqual((fa - fb) * fc, fa * fc - fb * fc)
-            XCTAssertEqual((fa + fb) / fc, fa / fc + fb / fc)
-            XCTAssertEqual((fa - fb) / fc, fa / fc - fb / fc)
+            #expect((fa + fb) * fc == fa * fc + fb * fc)
+            #expect((fa - fb) * fc == fa * fc - fb * fc)
+            #expect((fa + fb) / fc == fa / fc + fb / fc)
+            #expect((fa - fb) / fc == fa / fc - fb / fc)
         }
     }
-    
-    func testExp() {
-        // a ** 10 = a * a * a * a * a * a * a * a * a * a
+
+    @Test func exponentiation() {
         let a = BFraction(BInt(bitWidth: 100), BInt(bitWidth: 100) + 1)
         var x1 = a ** 10
         var x2 = BFraction(1, 1)
         for _ in 0 ..< 10 {
             x2 *= a
         }
-        XCTAssertEqual(x1, x2)
-        x1 = (-a) ** 10
+        #expect(x1 == x2)
+        x1 = ((-a) ** 10)
         x2 = BFraction(1, 1)
         for _ in 0 ..< 10 {
             x2 *= (-a)
         }
-        XCTAssertEqual(x1, x2)
+        #expect(x1 == x2)
     }
-    
-    func doTestInt2(_ f: BFraction, _ x: Int) {
+
+    func checkIntOperation(_ f: BFraction, _ x: Int) {
         let fx = BFraction(x, 1)
         let X = BInt(x)
-        XCTAssertEqual(f + fx, f + x)
-        XCTAssertEqual(f + fx, x + f)
-        XCTAssertEqual(f + fx, f + X)
-        XCTAssertEqual(f + fx, X + f)
-        XCTAssertEqual(f - fx, f - x)
-        XCTAssertEqual(f - fx, f - X)
-        XCTAssertEqual(f * fx, f * x)
-        XCTAssertEqual(f * fx, x * f)
-        XCTAssertEqual(f * fx, f * X)
-        XCTAssertEqual(f * fx, X * f)
+        #expect(f + fx == f + x)
+        #expect(f + fx == x + f)
+        #expect(f + fx == f + X)
+        #expect(f + fx == X + f)
+        #expect(f - fx == f - x)
+        #expect(f - fx == f - X)
+        #expect(f * fx == f * x)
+        #expect(f * fx == x * f)
+        #expect(f * fx == f * X)
+        #expect(f * fx == X * f)
         if x != 0 {
-            XCTAssertEqual(f / fx, f / x)
-            XCTAssertEqual(f / fx, f / X)
+            #expect(f / fx == f / x)
+            #expect(f / fx == f / X)
         }
-        XCTAssertEqual(f == fx, f == x)
-        XCTAssertEqual(f == fx, f == X)
-        XCTAssertEqual(f == fx, x == f)
-        XCTAssertEqual(f == fx, X == f)
-        XCTAssertEqual(f != fx, f != x)
-        XCTAssertEqual(f != fx, f != X)
-        XCTAssertEqual(f != fx, x != f)
-        XCTAssertEqual(f != fx, X != f)
-        XCTAssertEqual(f < fx, f < x)
-        XCTAssertEqual(f < fx, f < X)
-        XCTAssertEqual(f < fx, x > f)
-        XCTAssertEqual(f < fx, X > f)
-        XCTAssertEqual(f > fx, f > x)
-        XCTAssertEqual(f > fx, f > X)
-        XCTAssertEqual(f > fx, x < f)
-        XCTAssertEqual(f > fx, X < f)
-        XCTAssertEqual(f <= fx, f <= x)
-        XCTAssertEqual(f <= fx, f <= X)
-        XCTAssertEqual(f <= fx, x >= f)
-        XCTAssertEqual(f <= fx, X >= f)
-        XCTAssertEqual(f >= fx, f >= x)
-        XCTAssertEqual(f >= fx, f >= X)
-        XCTAssertEqual(f >= fx, x <= f)
-        XCTAssertEqual(f >= fx, X <= f)
+        let eq = f == fx
+        let ne = f != fx
+        let lt = f < fx
+        let gt = f > fx
+        let le = f <= fx
+        let ge = f >= fx
+        #expect(eq == (f == x))
+        #expect(eq == (f == X))
+        #expect(eq == (x == f))
+        #expect(eq == (X == f))
+        #expect(ne == (f != x))
+        #expect(ne == (f != X))
+        #expect(ne == (x != f))
+        #expect(ne == (X != f))
+        #expect(lt == (f < x))
+        #expect(lt == (f < X))
+        #expect(lt == (x > f))
+        #expect(lt == (X > f))
+        #expect(gt == (f > x))
+        #expect(gt == (f > X))
+        #expect(gt == (x < f))
+        #expect(gt == (X < f))
+        #expect(le == (f <= x))
+        #expect(le == (f <= X))
+        #expect(le == (x >= f))
+        #expect(le == (X >= f))
+        #expect(ge == (f >= x))
+        #expect(ge == (f >= X))
+        #expect(ge == (x <= f))
+        #expect(ge == (X <= f))
     }
-    
-    func doTestInt1(_ f: BFraction) {
-        doTestInt2(f, 0)
-        doTestInt2(f, 1)
-        doTestInt2(f, -1)
-        doTestInt2(f, Int.max)
-        doTestInt2(f, Int.min)
+
+    func checkIntOperations(_ f: BFraction) {
+        checkIntOperation(f, 0)
+        checkIntOperation(f, 1)
+        checkIntOperation(f, -1)
+        checkIntOperation(f, Int.max)
+        checkIntOperation(f, Int.min)
     }
-    
-    func testInt() {
-        doTestInt1(BFraction.ZERO)
-        doTestInt1(BFraction.ONE)
-        doTestInt1(-BFraction.ONE)
-        doTestInt1(BFraction(Int.max, 1))
-        doTestInt1(BFraction(Int.min, 1))
+
+    @Test func intOperations() {
+        checkIntOperations(BFraction.ZERO)
+        checkIntOperations(BFraction.ONE)
+        checkIntOperations(-BFraction.ONE)
+        checkIntOperations(BFraction(Int.max, 1))
+        checkIntOperations(BFraction(Int.min, 1))
     }
-    
-    func testConversion() {
+
+    @Test func conversion() {
         let f1 = BFraction(1, 10)
         let f2 = BFraction(0.1)!
-        XCTAssertEqual(f1.asDecimalString(precision: 1), "0.1")
-        XCTAssertEqual(f1.asDecimalString(precision: 55), "0.1000000000000000000000000000000000000000000000000000000")
-        XCTAssertEqual(f2.asDecimalString(precision: 1), "0.1")
-        XCTAssertEqual(f2.asDecimalString(precision: 55), "0.1000000000000000055511151231257827021181583404541015625")
+        #expect(f1.asDecimalString(precision: 1) == "0.1")
+        #expect(f1.asDecimalString(precision: 55) == "0.1000000000000000000000000000000000000000000000000000000")
+        #expect(f2.asDecimalString(precision: 1) == "0.1")
+        #expect(f2.asDecimalString(precision: 55) == "0.1000000000000000055511151231257827021181583404541015625")
     }
-    
+
     struct testB {
-        
+
         let n: Int
         let num: BInt
         let denum: Int
-        
+
         init(_ n: Int, _ num: BInt, _ denum: Int) {
             self.n = n
             self.num = num
             self.denum = denum
         }
     }
-    
+
     let tests: [testB] = [
         testB(0, BInt("1")!, 1),
         testB(1, BInt("1")!, 2),
@@ -268,66 +269,66 @@ class FractionTest: XCTestCase {
         testB(58, BInt("84483613348880041862046775994036021")!, 354),
         testB(60, BInt("-1215233140483755572040304994079820246041491")!, 56786730),
     ]
-    
-    func testDecimalString() {
+
+    @Test func decimalString() {
         for _ in 0 ..< 100 {
             let n = BInt(bitWidth: 1000)
             let d = BInt(bitWidth: 100) + 1
             let x = BFraction(n, d)
             let s1 = x.asDecimalString(precision: 100, exponential: false)
             let s2 = x.asDecimalString(precision: 100, exponential: true)
-            XCTAssertEqual(BFraction(s1)!, BFraction(s2)!)
+            #expect(BFraction(s1)! == BFraction(s2)!)
         }
     }
-    
-    func testBernoulli1() {
+
+    @Test func bernoulliNumbers() {
         for t in tests {
             let b = BFraction.bernoulli(t.n)
-            XCTAssertEqual(b, BFraction(t.num, t.denum))
+            #expect(b == BFraction(t.num, t.denum))
         }
         for i in 1 ..< 100 {
-            XCTAssertEqual(BFraction.bernoulli(2 * i + 1), BFraction.ZERO)
+            #expect(BFraction.bernoulli(2 * i + 1) == BFraction.ZERO)
         }
     }
-    
-    func testBernoulli2() {
+
+    @Test func bernoulliSequence() {
         let x = BFraction.bernoulliSequence(200)
         for i in 0 ..< 200 {
-            XCTAssertEqual(BFraction.bernoulli(2 * i), x[i])
+            #expect(BFraction.bernoulli(2 * i) == x[i])
         }
     }
-    
-    func doTestMod(_ f: BFraction, _ P: BInt) {
+
+    func checkMod(_ f: BFraction, _ P: BInt) {
         let p = P.asInt()!
         let M = f.mod(P)
         let m = f.mod(p)
         if M == nil {
-            XCTAssertNil(m)
-            XCTAssertTrue(f.denominator.gcd(P) > 1)
+            #expect(m == nil)
+            #expect(f.denominator.gcd(P) > 1)
         } else {
             let MI = f.denominator.modInverse(P)
-            XCTAssertEqual(M!, (MI * f.numerator).mod(P))
-            XCTAssertEqual(M!, BInt(m!))
+            #expect(M! == (MI * f.numerator).mod(P))
+            #expect(M! == BInt(m!))
         }
     }
-    
-    func testMod() {
+
+    @Test func modulus() {
         for _ in 0 ..< 1000 {
             let P = BInt(bitWidth: 50)
             let f = BFraction(BInt(bitWidth: 200), BInt(bitWidth: 100) + 1)
-            doTestMod(f, P)
-            doTestMod(-f, P)
-            doTestMod(f, BInt.ONE)
-            doTestMod(-f, BInt.ONE)
-            doTestMod(BFraction.ONE, P)
-            doTestMod(-BFraction.ONE, P)
+            checkMod(f, P)
+            checkMod(-f, P)
+            checkMod(f, BInt.ONE)
+            checkMod(-f, BInt.ONE)
+            checkMod(BFraction.ONE, P)
+            checkMod(-BFraction.ONE, P)
         }
     }
-    
-    func testContinuedFractionsBInt() {
+
+    @Test func continuedFractionsBInt() {
         let f = BFraction([BInt.ZERO])
-        XCTAssertEqual(f, BFraction.ZERO)
-        XCTAssertEqual(f.asContinuedFraction(), [BInt.ZERO])
+        #expect(f == BFraction.ZERO)
+        #expect(f.asContinuedFraction() == [BInt.ZERO])
         for _ in 0 ..< 10 {
             var x = [BInt](repeating: BInt.ZERO, count: 100)
             for i in 0 ..< x.count {
@@ -335,16 +336,16 @@ class FractionTest: XCTestCase {
             }
             let f = BFraction(x)
             let y = f.asContinuedFraction()
-            XCTAssert(x == y || x[x.count - 1] == BInt.ONE)
-            XCTAssert(x != y || x[x.count - 1] != BInt.ONE)
+            #expect(x == y || x[x.count - 1] == BInt.ONE)
+            #expect(x != y || x[x.count - 1] != BInt.ONE)
             x[0] = -x[0]
             let g = BFraction(x)
             let z = g.asContinuedFraction()
-            XCTAssert(x == z || x[x.count - 1] == BInt.ONE)
-            XCTAssert(x != z || x[x.count - 1] != BInt.ONE)
+            #expect(x == z || x[x.count - 1] == BInt.ONE)
+            #expect(x != z || x[x.count - 1] != BInt.ONE)
         }
     }
-    
+
     func B2I(_ b: [BInt]) -> [Int] {
         var x = [Int](repeating: 0, count: b.count)
         for i in 0 ..< x.count {
@@ -353,10 +354,10 @@ class FractionTest: XCTestCase {
         return x
     }
 
-    func testContinuedFractionsInt() {
+    @Test func continuedFractionsInt() {
         let f = BFraction([0])
-        XCTAssertEqual(f, BFraction.ZERO)
-        XCTAssertEqual(f.asContinuedFraction(), [BInt.ZERO])
+        #expect(f == BFraction.ZERO)
+        #expect(f.asContinuedFraction() == [BInt.ZERO])
         for _ in 0 ..< 10 {
             var x = [Int](repeating: 0, count: 100)
             for i in 0 ..< x.count {
@@ -364,93 +365,93 @@ class FractionTest: XCTestCase {
             }
             let f = BFraction(x)
             let y = f.asContinuedFraction()
-            XCTAssert(x == B2I(y) || x[x.count - 1] == BInt.ONE)
-            XCTAssert(x != B2I(y) || x[x.count - 1] != BInt.ONE)
+            #expect(x == B2I(y) || x[x.count - 1] == BInt.ONE)
+            #expect(x != B2I(y) || x[x.count - 1] != BInt.ONE)
             x[0] = -x[0]
             let g = BFraction(x)
             let z = g.asContinuedFraction()
-            XCTAssert(x == B2I(z) || x[x.count - 1] == BInt.ONE)
-            XCTAssert(x != B2I(z) || x[x.count - 1] != BInt.ONE)
+            #expect(x == B2I(z) || x[x.count - 1] == BInt.ONE)
+            #expect(x != B2I(z) || x[x.count - 1] != BInt.ONE)
         }
     }
-    
-    func testEQ() {
+
+    @Test func equalityOperator() {
         let x = BFraction(35, 7)
-        XCTAssertTrue(x == BInt(5))
-        XCTAssertTrue(BInt(5) == x)
-        XCTAssertTrue(x == 5)
-        XCTAssertTrue(5 == x)
-        XCTAssertTrue(-x == BInt(-5))
-        XCTAssertTrue(BInt(-5) == -x)
-        XCTAssertTrue(-x == -5)
-        XCTAssertTrue(-5 == -x)
+        #expect(x == BInt(5))
+        #expect(BInt(5) == x)
+        #expect(x == 5)
+        #expect(5 == x)
+        #expect(-x == BInt(-5))
+        #expect(BInt(-5) == -x)
+        #expect(-x == -5)
+        #expect(-5 == -x)
     }
-    
-    func testNE() {
+
+    @Test func inequalityOperator() {
         let x = BFraction(35, 7)
-        XCTAssertTrue(x != BInt(6))
-        XCTAssertTrue(BInt(6) != x)
-        XCTAssertTrue(x != 6)
-        XCTAssertTrue(6 != x)
-        XCTAssertTrue(-x != BInt(-6))
-        XCTAssertTrue(BInt(-6) != -x)
-        XCTAssertTrue(-x != -6)
-        XCTAssertTrue(-6 != -x)
+        #expect(x != BInt(6))
+        #expect(BInt(6) != x)
+        #expect(x != 6)
+        #expect(6 != x)
+        #expect(-x != BInt(-6))
+        #expect(BInt(-6) != -x)
+        #expect(-x != -6)
+        #expect(-6 != -x)
     }
-    
-    func testLT() {
+
+    @Test func lessThanOperator() {
         let x = BFraction(35, 7)
-        XCTAssertTrue(x < BInt(6))
-        XCTAssertTrue(BInt(4) < x)
-        XCTAssertTrue(x < 6)
-        XCTAssertTrue(4 < x)
-        XCTAssertTrue(BInt(-6) < -x)
-        XCTAssertTrue(-x < BInt(-4))
-        XCTAssertTrue(-6 < -x)
-        XCTAssertTrue(-x < -4)
+        #expect(x < BInt(6))
+        #expect(BInt(4) < x)
+        #expect(x < 6)
+        #expect(4 < x)
+        #expect(BInt(-6) < -x)
+        #expect(-x < BInt(-4))
+        #expect(-6 < -x)
+        #expect(-x < -4)
     }
-    
-    func testGT() {
+
+    @Test func greaterThanOperator() {
         let x = BFraction(35, 7)
-        XCTAssertTrue(x > BInt(4))
-        XCTAssertTrue(BInt(6) > x)
-        XCTAssertTrue(x > 4)
-        XCTAssertTrue(6 > x)
-        XCTAssertTrue(-x > BInt(-6))
-        XCTAssertTrue(BInt(-4) > -x)
-        XCTAssertTrue(-x > -6)
-        XCTAssertTrue(-4 > -x)
+        #expect(x > BInt(4))
+        #expect(BInt(6) > x)
+        #expect(x > 4)
+        #expect(6 > x)
+        #expect(-x > BInt(-6))
+        #expect(BInt(-4) > -x)
+        #expect(-x > -6)
+        #expect(-4 > -x)
     }
-    
-    func testLE() {
+
+    @Test func lessOrEqualOperator() {
         let x = BFraction(35, 7)
-        XCTAssertTrue(x <= BInt(6))
-        XCTAssertTrue(x <= BInt(5))
-        XCTAssertTrue(x <= 6)
-        XCTAssertTrue(x <= 5)
-        XCTAssertTrue(BInt(-6) <= -x)
-        XCTAssertTrue(BInt(-5) <= -x)
-        XCTAssertTrue(-6 <= -x)
-        XCTAssertTrue(-5 <= -x)
+        #expect(x <= BInt(6))
+        #expect(x <= BInt(5))
+        #expect(x <= 6)
+        #expect(x <= 5)
+        #expect(BInt(-6) <= -x)
+        #expect(BInt(-5) <= -x)
+        #expect(-6 <= -x)
+        #expect(-5 <= -x)
     }
-    
-    func testGE() {
+
+    @Test func greaterOrEqualOperator() {
         let x = BFraction(35, 7)
-        XCTAssertTrue(x >= BInt(4))
-        XCTAssertTrue(x >= BInt(5))
-        XCTAssertTrue(x >= 4)
-        XCTAssertTrue(x >= 5)
-        XCTAssertTrue(BInt(-4) >= -x)
-        XCTAssertTrue(BInt(-5) >= -x)
-        XCTAssertTrue(-4 >= -x)
-        XCTAssertTrue(-5 >= -x)
+        #expect(x >= BInt(4))
+        #expect(x >= BInt(5))
+        #expect(x >= 4)
+        #expect(x >= 5)
+        #expect(BInt(-4) >= -x)
+        #expect(BInt(-5) >= -x)
+        #expect(-4 >= -x)
+        #expect(-5 >= -x)
     }
-    
-    func testHarmonic() {
+
+    @Test func harmonicNumbers() {
         let n = 100
         let harmonics = BFraction.harmonicSequence(n)
         for i in 0 ..< n {
-            XCTAssertEqual(harmonics[i], BFraction.harmonic(i + 1))
+            #expect(harmonics[i] == BFraction.harmonic(i + 1))
         }
     }
 }

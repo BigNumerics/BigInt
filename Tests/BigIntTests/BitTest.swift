@@ -5,136 +5,128 @@
 //  Created by Leif Ibsen on 31/12/2018.
 //
 
-import XCTest
+import Testing
 @testable import BigInt
 
-class BitTest: XCTestCase {
+@Suite struct BitTests {
 
-    override func setUp() {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    func doTest(_ x1: BInt) {
+    func checkNegation(_ x1: BInt) {
         var x2 = x1
         x2.negate()
-        XCTAssertEqual(x1, -x2)
-        XCTAssertEqual(~x1 + 1, -x1)
+        #expect(x1 == -x2)
+        #expect(~x1 + 1 == -x1)
     }
 
-    func test1() {
-        doTest(BInt(0))
-        doTest(BInt(1))
-        doTest(BInt(-1))
-        doTest(BInt(bitWidth: 200))
+    @Test func negateAndClearBit() {
+        checkNegation(BInt(0))
+        checkNegation(BInt(1))
+        checkNegation(BInt(-1))
+        checkNegation(BInt(bitWidth: 200))
         var x1 = BInt.ONE << 37
         x1.clearBit(37)
-        XCTAssert(x1.isZero)
+        #expect(x1.isZero)
         var x2 = BInt.ONE << 150
         x2.clearBit(150)
-        XCTAssert(x2.isZero)
+        #expect(x2.isZero)
     }
 
-    func test2() {
+    @Test func bitwiseDistributivity() {
         let a = BInt(bitWidth: 300)
         let b = BInt(bitWidth: 300)
         let c = BInt(bitWidth: 300)
-        XCTAssertEqual(b ^ b ^ b, b)
-        XCTAssertEqual(a & (b | c), (a & b) | (a & c))
+        #expect(b ^ b ^ b == b)
+        #expect(a & (b | c) == (a & b) | (a & c))
     }
 
-    func test3() {
+    @Test func flipBitInverse() {
         let a = BInt(bitWidth: 300)
         var b = a
         for i in 0 ..< 300 {
             b.flipBit(i)
         }
         for i in 0 ..< 300 {
-            XCTAssertEqual(a.testBit(i), !b.testBit(i))
+            #expect(a.testBit(i) == !b.testBit(i))
         }
     }
 
-    func test4() {
+    @Test func bitwiseIdentities() {
         let a = BInt(bitWidth: 300)
-        XCTAssertEqual(a | BInt.ZERO, a)
-        XCTAssertEqual(a & BInt.ZERO, BInt.ZERO)
-        XCTAssertEqual(a & ~BInt.ZERO, a)
-        XCTAssertEqual(a ^ BInt.ZERO, a)
-        XCTAssertEqual(a ^ ~BInt.ZERO, ~a)
+        #expect(a | BInt.ZERO == a)
+        #expect(a & BInt.ZERO == BInt.ZERO)
+        #expect(a & ~BInt.ZERO == a)
+        #expect(a ^ BInt.ZERO == a)
+        #expect(a ^ ~BInt.ZERO == ~a)
     }
 
-    func test5() {
+    @Test func bitwiseSmallValues() {
         let b3 = BInt(3)
         let bm3 = BInt(-3)
         let b7 = BInt(7)
         let bm7 = BInt(-7)
-        XCTAssertEqual(b3 & b7, BInt(3))
-        XCTAssertEqual(b3 & bm7, BInt(1))
-        XCTAssertEqual(bm3 & b7, BInt(5))
-        XCTAssertEqual(bm3 & bm7, BInt(-7))
-        XCTAssertEqual(b3 | b7, BInt(7))
-        XCTAssertEqual(b3 | bm7, BInt(-5))
-        XCTAssertEqual(bm3 | b7, BInt(-1))
-        XCTAssertEqual(bm3 | bm7, BInt(-3))
-        XCTAssertEqual(b3 ^ b7, BInt(4))
-        XCTAssertEqual(b3 ^ bm7, BInt(-6))
-        XCTAssertEqual(bm3 ^ b7, BInt(-6))
-        XCTAssertEqual(bm3 ^ bm7, BInt(4))
-        XCTAssertEqual(~b3, BInt(-4))
-        XCTAssertEqual(~bm3, BInt(2))
-        XCTAssertEqual(~b7, BInt(-8))
-        XCTAssertEqual(~bm7, BInt(6))
+        #expect(b3 & b7 == BInt(3))
+        #expect(b3 & bm7 == BInt(1))
+        #expect(bm3 & b7 == BInt(5))
+        #expect(bm3 & bm7 == BInt(-7))
+        #expect(b3 | b7 == BInt(7))
+        #expect(b3 | bm7 == BInt(-5))
+        #expect(bm3 | b7 == BInt(-1))
+        #expect(bm3 | bm7 == BInt(-3))
+        #expect(b3 ^ b7 == BInt(4))
+        #expect(b3 ^ bm7 == BInt(-6))
+        #expect(bm3 ^ b7 == BInt(-6))
+        #expect(bm3 ^ bm7 == BInt(4))
+        #expect(~b3 == BInt(-4))
+        #expect(~bm3 == BInt(2))
+        #expect(~b7 == BInt(-8))
+        #expect(~bm7 == BInt(6))
     }
 
-    func test6() {
+    @Test func bitwiseCommutativity() {
         for _ in 0 ..< 100 {
             let x = BInt(bitWidth: 100)
             let y = BInt(bitWidth: 300)
-            doTest(x)
-            doTest(y)
-            XCTAssertEqual(x & y, y & x)
-            XCTAssertEqual(x & -y, -y & x)
-            XCTAssertEqual(-x & y, y & -x)
-            XCTAssertEqual(-x & -y, -y & -x)
-            XCTAssertEqual(x | y, y | x)
-            XCTAssertEqual(x | -y, -y | x)
-            XCTAssertEqual(-x | y, y | -x)
-            XCTAssertEqual(-x | -y, -y | -x)
-            XCTAssertEqual(x ^ y, y ^ x)
-            XCTAssertEqual(x ^ -y, -y ^ x)
-            XCTAssertEqual(-x ^ y, y ^ -x)
-            XCTAssertEqual(-x ^ -y, -y ^ -x)
+            checkNegation(x)
+            checkNegation(y)
+            #expect(x & y == y & x)
+            #expect(x & -y == -y & x)
+            #expect(-x & y == y & -x)
+            #expect(-x & -y == -y & -x)
+            #expect(x | y == y | x)
+            #expect(x | -y == -y | x)
+            #expect(-x | y == y | -x)
+            #expect(-x | -y == -y | -x)
+            #expect(x ^ y == y ^ x)
+            #expect(x ^ -y == -y ^ x)
+            #expect(-x ^ y == y ^ -x)
+            #expect(-x ^ -y == -y ^ -x)
         }
     }
-    
-    func test7() {
+
+    @Test func setBitClearBitFlipBit() {
         let x = BInt(bitWidth: 50)
         var y = x
         y.setBit(-1)
-        XCTAssertEqual(x, y)
+        #expect(x == y)
         y.clearBit(-1)
-        XCTAssertEqual(x, y)
+        #expect(x == y)
         y.flipBit(-1)
-        XCTAssertEqual(x, y)
-        XCTAssertFalse(y.testBit(-1))
+        #expect(x == y)
+        #expect(!y.testBit(-1))
         y = BInt(0)
         y.setBit(200)
-        XCTAssertEqual(y._magnitude.count, 4)
-        XCTAssertEqual(y, BInt.ONE << 200)
-        XCTAssertTrue(y.testBit(200))
+        #expect(y._magnitude.count == 4)
+        #expect(y == BInt.ONE << 200)
+        #expect(y.testBit(200))
         y.clearBit(200)
-        XCTAssertEqual(y._magnitude.count, 1)
-        XCTAssertFalse(y.testBit(200))
-        XCTAssertEqual(y, BInt.ZERO)
+        #expect(y._magnitude.count == 1)
+        #expect(!y.testBit(200))
+        #expect(y == BInt.ZERO)
         y.flipBit(200)
-        XCTAssertEqual(y, BInt.ONE << 200)
+        #expect(y == BInt.ONE << 200)
         y.flipBit(200)
-        XCTAssertEqual(y, BInt.ZERO)
+        #expect(y == BInt.ZERO)
     }
-    
+
     func popCount(_ a: BInt) -> Int {
         var n = 0
         var x = a
@@ -147,16 +139,16 @@ class BitTest: XCTestCase {
         return n
     }
 
-    func test8() {
-        XCTAssertEqual(BInt.ZERO.population, 0)
+    @Test func populationCount() {
+        #expect(BInt.ZERO.population == 0)
         let x = BInt("ffffffffffffffff", radix: 16)!
         for i in 0 ..< 100 {
-            XCTAssertEqual((BInt.ONE << i).population, 1)
-            XCTAssertEqual((x << i).population, 64)
+            #expect((BInt.ONE << i).population == 1)
+            #expect((x << i).population == 64)
         }
         for _ in 0 ..< 100 {
             let x = BInt(bitWidth: 200)
-            XCTAssertEqual(x.population, popCount(x))
+            #expect(x.population == popCount(x))
         }
     }
 

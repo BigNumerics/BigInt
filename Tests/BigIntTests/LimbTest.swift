@@ -5,30 +5,22 @@
 //  Created by Leif Ibsen on 24/12/2018.
 //
 
-import XCTest
+import Testing
 @testable import BigInt
 
-class LimbTest: XCTestCase {
+@Suite struct LimbTests {
 
-    override func setUp() {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    func test1() {
+    @Test func limbOperations() {
         var x1: Limbs = [0, 0, 0]
-        XCTAssertEqual(x1.count, 3)
+        #expect(x1.count == 3)
         x1.ensureSize(5)
-        XCTAssertEqual(x1.count, 5)
+        #expect(x1.count == 5)
         x1.normalize()
-        XCTAssertEqual(x1.count, 1)
+        #expect(x1.count == 1)
         x1 = [0, 0, 1]
-        XCTAssertEqual(x1.bitWidth, 129)
+        #expect(x1.bitWidth == 129)
         x1.setBitAt(1)
-        XCTAssertEqual(BInt(x1), (BInt(1) << 128) + 2)
+        #expect(BInt(x1) == (BInt(1) << 128) + 2)
     }
 
 }

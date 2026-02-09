@@ -5,125 +5,116 @@
 //  Created by Leif Ibsen on 11/12/2018.
 //
 
-import XCTest
+import Testing
 @testable import BigInt
 
-class DivModTest: XCTestCase {
+@Suite struct DivModTests {
 
-    override func setUp() {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    func doTest1(_ bw1: Int, _ bw2: Int) {
+    func checkRandomDivMod(_ bw1: Int, _ bw2: Int) {
         let x1 = BInt(bitWidth: bw1)
         let x2 = BInt(bitWidth: bw2) + BInt.ONE
-        doTest2(x1, x2)
+        checkDivMod(x1, x2)
     }
 
-    func doTest2(_ x1: BInt, _ x2: BInt) {
+    func checkDivMod(_ x1: BInt, _ x2: BInt) {
         let r1 = x1 % x2
         let q1 = x1 / x2
-        XCTAssertEqual(x1, x2 * q1 + r1)
-        XCTAssertTrue(r1.abs < x2.abs)
+        #expect(x1 == x2 * q1 + r1)
+        #expect(r1.abs < x2.abs)
         let (q2, r2) = x1.quotientAndRemainder(dividingBy: x2)
-        XCTAssertEqual(q1, q2)
-        XCTAssertEqual(r1, r2)
+        #expect(q1 == q2)
+        #expect(r1 == r2)
         var q3 = BInt.ZERO
         var r3 = BInt.ZERO
         x1.quotientAndRemainder(dividingBy: x2, &q3, &r3)
-        XCTAssertEqual(q1, q3)
-        XCTAssertEqual(r1, r3)
-        XCTAssertEqual(x1.mod(Int.min), x1.mod(BInt(Int.min)).asInt()!)
+        #expect(q1 == q3)
+        #expect(r1 == r3)
+        #expect(x1.mod(Int.min) == x1.mod(BInt(Int.min)).asInt()!)
     }
 
-    func doTest5(_ x1: BInt, _ x2: Int) {
+    func checkIntDivisor(_ x1: BInt, _ x2: Int) {
         let (q1, r1) = x1.quotientAndRemainder(dividingBy: x2)
         let (q2, r2) = x1.quotientAndRemainder(dividingBy: BInt(x2))
-        XCTAssertEqual(q1, q2)
-        XCTAssertEqual(r1, r2.asInt()!)
-        XCTAssertEqual(x1 / x2, x1 / BInt(x2))
-        XCTAssertEqual(x1 % x2, x1 % BInt(x2))
-        XCTAssertEqual(x1.mod(x2), x1.mod(BInt(x2)).asInt()!)
+        #expect(q1 == q2)
+        #expect(r1 == r2.asInt()!)
+        #expect(x1 / x2 == x1 / BInt(x2))
+        #expect(x1 % x2 == x1 % BInt(x2))
+        #expect(x1.mod(x2) == x1.mod(BInt(x2)).asInt()!)
     }
 
-    func test1() {
-        doTest1(30, 20)
-        doTest1(30, 120)
-        doTest1(130, 20)
-        doTest1(130, 120)
-        doTest2(BInt.ONE << 512 - 1, BInt.ONE)
-        doTest2(BInt.ONE << 512 - 1, BInt.ONE << 512 - 1)
-        doTest2(BInt.ONE << 512, BInt.ONE)
-        doTest2(BInt.ONE << 512, BInt.ONE << 512 - 1)
+    @Test func divModVariousBitwidths() {
+        checkRandomDivMod(30, 20)
+        checkRandomDivMod(30, 120)
+        checkRandomDivMod(130, 20)
+        checkRandomDivMod(130, 120)
+        checkDivMod(BInt.ONE << 512 - 1, BInt.ONE)
+        checkDivMod(BInt.ONE << 512 - 1, BInt.ONE << 512 - 1)
+        checkDivMod(BInt.ONE << 512, BInt.ONE)
+        checkDivMod(BInt.ONE << 512, BInt.ONE << 512 - 1)
     }
 
-    func test2() {
-        XCTAssertEqual(BInt(7) % BInt(4), BInt(3))
-        XCTAssertEqual(BInt(-7) % BInt(4), BInt(-3))
-        XCTAssertEqual(BInt(7) % BInt(-4), BInt(3))
-        XCTAssertEqual(BInt(-7) % BInt(-4), BInt(-3))
-        XCTAssertEqual(BInt(7) % 4, BInt(3))
-        XCTAssertEqual(BInt(-7) % 4, BInt(-3))
-        XCTAssertEqual(BInt(7) % (-4), BInt(3))
-        XCTAssertEqual(BInt(-7) % (-4), BInt(-3))
-        XCTAssertEqual(BInt(7).mod(BInt(4)), BInt(3))
-        XCTAssertEqual(BInt(-7).mod(BInt(4)), BInt(1))
-        XCTAssertEqual(BInt(7).mod(BInt(-4)), BInt(3))
-        XCTAssertEqual(BInt(-7).mod(BInt(-4)), BInt(1))
-        XCTAssertEqual(BInt(7).mod(4), 3)
-        XCTAssertEqual(BInt(-7).mod(4), 1)
-        XCTAssertEqual(BInt(7).mod(-4), 3)
-        XCTAssertEqual(BInt(-7).mod(-4), 1)
-        XCTAssertEqual(BInt(8).mod(4), 0)
-        XCTAssertEqual(BInt(-8).mod(4), 0)
-        XCTAssertEqual(BInt(8).mod(-4), 0)
-        XCTAssertEqual(BInt(-8).mod(-4), 0)
-        doTest2(BInt(7), BInt(4))
-        doTest2(BInt(-7), BInt(4))
-        doTest2(BInt(7), BInt(-4))
-        doTest2(BInt(-7), BInt(-4))
-        doTest2(BInt(Limbs(repeating: UInt64.max, count: 50)), BInt(Limbs(repeating: UInt64.max, count: 35)))
+    @Test func modOperator() {
+        #expect(BInt(7) % BInt(4) == BInt(3))
+        #expect(BInt(-7) % BInt(4) == BInt(-3))
+        #expect(BInt(7) % BInt(-4) == BInt(3))
+        #expect(BInt(-7) % BInt(-4) == BInt(-3))
+        #expect(BInt(7) % 4 == BInt(3))
+        #expect(BInt(-7) % 4 == BInt(-3))
+        #expect(BInt(7) % (-4) == BInt(3))
+        #expect(BInt(-7) % (-4) == BInt(-3))
+        #expect(BInt(7).mod(BInt(4)) == BInt(3))
+        #expect(BInt(-7).mod(BInt(4)) == BInt(1))
+        #expect(BInt(7).mod(BInt(-4)) == BInt(3))
+        #expect(BInt(-7).mod(BInt(-4)) == BInt(1))
+        #expect(BInt(7).mod(4) == 3)
+        #expect(BInt(-7).mod(4) == 1)
+        #expect(BInt(7).mod(-4) == 3)
+        #expect(BInt(-7).mod(-4) == 1)
+        #expect(BInt(8).mod(4) == 0)
+        #expect(BInt(-8).mod(4) == 0)
+        #expect(BInt(8).mod(-4) == 0)
+        #expect(BInt(-8).mod(-4) == 0)
+        checkDivMod(BInt(7), BInt(4))
+        checkDivMod(BInt(-7), BInt(4))
+        checkDivMod(BInt(7), BInt(-4))
+        checkDivMod(BInt(-7), BInt(-4))
+        checkDivMod(BInt(Limbs(repeating: UInt64.max, count: 50)), BInt(Limbs(repeating: UInt64.max, count: 35)))
     }
-    
-    func test3() {
-        XCTAssertEqual(BInt(0) / BInt(7), BInt.ZERO)
-        XCTAssertEqual(-BInt(0) / BInt(7), BInt.ZERO)
-        XCTAssertEqual(BInt(0) / BInt(-7), BInt.ZERO)
-        XCTAssertEqual(-BInt(0) / BInt(-7), BInt.ZERO)
-        XCTAssertEqual(BInt(7) % BInt(7), BInt.ZERO)
-        XCTAssertEqual(BInt(-7) % BInt(7), BInt.ZERO)
-        XCTAssertEqual(BInt(7) % BInt(-7), BInt.ZERO)
-        XCTAssertEqual(BInt(-7) % BInt(-7), BInt.ZERO)
-        XCTAssertEqual(BInt(7) % 7, BInt.ZERO)
-        XCTAssertEqual(BInt(-7) % 7, BInt.ZERO)
-        XCTAssertEqual(BInt(7) % (-7), BInt.ZERO)
-        XCTAssertEqual(BInt(-7) % (-7), BInt.ZERO)
+
+    @Test func zeroDividend() {
+        #expect(BInt(0) / BInt(7) == BInt.ZERO)
+        #expect(-BInt(0) / BInt(7) == BInt.ZERO)
+        #expect(BInt(0) / BInt(-7) == BInt.ZERO)
+        #expect(-BInt(0) / BInt(-7) == BInt.ZERO)
+        #expect(BInt(7) % BInt(7) == BInt.ZERO)
+        #expect(BInt(-7) % BInt(7) == BInt.ZERO)
+        #expect(BInt(7) % BInt(-7) == BInt.ZERO)
+        #expect(BInt(-7) % BInt(-7) == BInt.ZERO)
+        #expect(BInt(7) % 7 == BInt.ZERO)
+        #expect(BInt(-7) % 7 == BInt.ZERO)
+        #expect(BInt(7) % (-7) == BInt.ZERO)
+        #expect(BInt(-7) % (-7) == BInt.ZERO)
     }
-    
-    func test4() {
-        // a BInt modulo an Int
+
+    @Test func bintModInt() {
         for _ in 0 ..< 100 {
             let x = BInt(bitWidth: 1000)
             let m = x._magnitude[0] == 0 ? 1 : Int(x._magnitude[0] & 0x7fffffffffffffff)
-            XCTAssertEqual(x.mod(m), x.mod(BInt(m)).asInt()!)
-            XCTAssertEqual(x.mod(-m), x.mod(-BInt(m)).asInt()!)
+            #expect(x.mod(m) == x.mod(BInt(m)).asInt()!)
+            #expect(x.mod(-m) == x.mod(-BInt(m)).asInt()!)
         }
     }
-    
-    func test5() {
+
+    @Test func intDivisorConsistency() {
         let x = BInt(bitWidth: 1000)
-        doTest5(x, 1)
-        doTest5(x, -1)
-        doTest5(x, 10)
-        doTest5(x, -10)
-        doTest5(x, Int.max)
-        doTest5(x, Int.max - 1)
-        doTest5(x, Int.min)
-        doTest5(x, Int.min + 1)
+        checkIntDivisor(x, 1)
+        checkIntDivisor(x, -1)
+        checkIntDivisor(x, 10)
+        checkIntDivisor(x, -10)
+        checkIntDivisor(x, Int.max)
+        checkIntDivisor(x, Int.max - 1)
+        checkIntDivisor(x, Int.min)
+        checkIntDivisor(x, Int.min + 1)
     }
-    
+
 }

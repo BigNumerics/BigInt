@@ -1,92 +1,76 @@
-//
-//  PrimeTest.swift
-//  BigIntegerTests
-//
-//  Created by Leif Ibsen on 15/12/2018.
-//
-
-import XCTest
+import Testing
 @testable import BigInt
 
-class PrimeTest: XCTestCase {
-
-    override func setUp() {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+@Suite
+struct PrimeTests {
+    func checkMersenne(_ x: Int) {
+        #expect((BInt(1) << x - 1).isProbablyPrime())
+        #expect(!(BInt(1) << x + 1).isProbablyPrime())
     }
 
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    func doMersenne(_ x: Int) {
-        XCTAssertTrue((BInt(1) << x - 1).isProbablyPrime())
-        XCTAssertTrue(!(BInt(1) << x + 1).isProbablyPrime())
-    }
-
-    func test1() {
-        XCTAssertFalse(BInt(100).isProbablyPrime())
-        XCTAssertFalse(BInt(100).isProbablyPrime(1))
+    @Test func probablePrime() {
+        #expect(!BInt(100).isProbablyPrime())
+        #expect(!BInt(100).isProbablyPrime(1))
         for i in 1 ... 5 {
-            XCTAssertTrue(BInt.probablePrime(100 * i).isProbablyPrime())
+            #expect(BInt.probablePrime(100 * i).isProbablyPrime())
         }
     }
 
-    func test2() {
-        doMersenne(3)
-        doMersenne(5)
-        doMersenne(7)
-        doMersenne(13)
-        doMersenne(17)
-        doMersenne(19)
-        doMersenne(31)
-        doMersenne(61)
-        doMersenne(89)
-        doMersenne(107)
-        doMersenne(127)
-        doMersenne(521)
+    @Test func mersennePrimes() {
+        checkMersenne(3)
+        checkMersenne(5)
+        checkMersenne(7)
+        checkMersenne(13)
+        checkMersenne(17)
+        checkMersenne(19)
+        checkMersenne(31)
+        checkMersenne(61)
+        checkMersenne(89)
+        checkMersenne(107)
+        checkMersenne(127)
+        checkMersenne(521)
     }
-    
-    func test3() {
-        XCTAssertEqual(BInt(-14).nextPrime(), BInt.TWO)
+
+    @Test func nextPrimeSequential() {
+        #expect(BInt(-14).nextPrime() == BInt.TWO)
         var x = BInt.ZERO
         for _ in 0 ..< 1000 {
             let p = x.nextPrime()
-            XCTAssertTrue(p.isProbablyPrime(100))
+            #expect(p.isProbablyPrime(100))
             var z = x + 1
             while z < p {
-                XCTAssertFalse(z.isProbablyPrime(100))
+                #expect(!z.isProbablyPrime(100))
                 z += 1
             }
             x = p
         }
     }
 
-    func test4() {
+    @Test func nextPrimeFromRandomBase() {
         for _ in 0 ..< 10 {
             let x = BInt(bitWidth: 100)
             let p = x.nextPrime()
-            XCTAssertTrue(p.isProbablyPrime(100))
+            #expect(p.isProbablyPrime(100))
             var z = x + 1
             while z < p {
-                XCTAssertFalse(z.isProbablyPrime(100))
+                #expect(!z.isProbablyPrime(100))
                 z += 1
             }
         }
     }
-    
-    func test5() {
-        XCTAssertEqual(BInt.primorial(0), BInt(1))
-        XCTAssertEqual(BInt.primorial(1), BInt(1))
-        XCTAssertEqual(BInt.primorial(2), BInt(2))
-        XCTAssertEqual(BInt.primorial(3), BInt(6))
-        XCTAssertEqual(BInt.primorial(4), BInt(6))
-        XCTAssertEqual(BInt.primorial(5), BInt(30))
-        XCTAssertEqual(BInt.primorial(6), BInt(30))
-        XCTAssertEqual(BInt.primorial(7), BInt(210))
-        XCTAssertEqual(BInt.primorial(8), BInt(210))
-        XCTAssertEqual(BInt.primorial(9), BInt(210))
-        XCTAssertEqual(BInt.primorial(10), BInt(210))
-        XCTAssertEqual(BInt.primorial(11), BInt(2310))
-    }
 
+    @Test func primorial() {
+        #expect(BInt.primorial(0) == BInt(1))
+        #expect(BInt.primorial(1) == BInt(1))
+        #expect(BInt.primorial(2) == BInt(2))
+        #expect(BInt.primorial(3) == BInt(6))
+        #expect(BInt.primorial(4) == BInt(6))
+        #expect(BInt.primorial(5) == BInt(30))
+        #expect(BInt.primorial(6) == BInt(30))
+        #expect(BInt.primorial(7) == BInt(210))
+        #expect(BInt.primorial(8) == BInt(210))
+        #expect(BInt.primorial(9) == BInt(210))
+        #expect(BInt.primorial(10) == BInt(210))
+        #expect(BInt.primorial(11) == BInt(2310))
+    }
 }

@@ -5,91 +5,82 @@
 //  Created by Leif Ibsen on 15/01/2019.
 //
 
-import XCTest
+import Testing
 @testable import BigInt
 
-class GcdTest: XCTestCase {
+@Suite struct GcdTests {
 
-    override func setUp() {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    func doTest(_ x: BInt, _ y: BInt) {
+    func checkGcd(_ x: BInt, _ y: BInt) {
         let g = x.gcd(y)
-        XCTAssertFalse(g.isNegative)
-        XCTAssertEqual(g, y.gcd(x))
-        XCTAssertEqual(x.gcd(BInt.ZERO), x.abs)
-        XCTAssertEqual(x.gcd(BInt.ONE), BInt.ONE)
-        XCTAssertEqual(x.gcd(x), x.abs)
+        #expect(!g.isNegative)
+        #expect(g == y.gcd(x))
+        #expect(x.gcd(BInt.ZERO) == x.abs)
+        #expect(x.gcd(BInt.ONE) == BInt.ONE)
+        #expect(x.gcd(x) == x.abs)
         if g > 0 {
             precondition(g != 0)
             let (qx, rx) = x.quotientAndRemainder(dividingBy: g)
             let (qy, ry) = y.quotientAndRemainder(dividingBy: g)
-            XCTAssertEqual(rx, BInt.ZERO)
-            XCTAssertEqual(ry, BInt.ZERO)
-            XCTAssertEqual(qx.gcd(qy), BInt.ONE)
-            XCTAssertEqual(qy.gcd(qx), BInt.ONE)
+            #expect(rx == BInt.ZERO)
+            #expect(ry == BInt.ZERO)
+            #expect(qx.gcd(qy) == BInt.ONE)
+            #expect(qy.gcd(qx) == BInt.ONE)
         }
-        XCTAssertEqual(x.gcd(x + 1), BInt.ONE)
+        #expect(x.gcd(x + 1) == BInt.ONE)
     }
 
-    func doTest1(_ x: BInt, _ y: BInt) {
-        doTest(x, y)
-        doTest(-x, y)
-        doTest(x, -y)
-        doTest(-x, -y)
+    func checkGcdAllSigns(_ x: BInt, _ y: BInt) {
+        checkGcd(x, y)
+        checkGcd(-x, y)
+        checkGcd(x, -y)
+        checkGcd(-x, -y)
     }
 
-    func test1() {
+    @Test func gcdVariousBitwidths() {
         var i = 1
         for _ in 0 ..< 4 {
             i *= 10
             for _ in 0 ..< 100 {
                 let x = BInt(bitWidth: i)
                 let y = BInt(bitWidth: 2 * i)
-                doTest1(x, y)
-                doTest1(x, BInt(Int.max))
-                doTest1(x, BInt(Int.min))
-                doTest1(x, BInt(Int.max) + 1)
-                doTest1(x, BInt(Int.min) - 1)
+                checkGcdAllSigns(x, y)
+                checkGcdAllSigns(x, BInt(Int.max))
+                checkGcdAllSigns(x, BInt(Int.min))
+                checkGcdAllSigns(x, BInt(Int.max) + 1)
+                checkGcdAllSigns(x, BInt(Int.min) - 1)
             }
         }
     }
 
-    func test2() {
-        doTest1(BInt.ZERO, BInt.ZERO)
-        doTest1(BInt.ZERO, BInt.ONE)
-        doTest1(BInt.ONE, BInt.ONE)
+    @Test func gcdEdgeCases() {
+        checkGcdAllSigns(BInt.ZERO, BInt.ZERO)
+        checkGcdAllSigns(BInt.ZERO, BInt.ONE)
+        checkGcdAllSigns(BInt.ONE, BInt.ONE)
     }
 
-    func test3() {
+    @Test func gcdIntConsistency() {
         for _ in 0 ..< 3 {
             let x = BInt(bitWidth: 100)
-            XCTAssertEqual(x.gcd(BInt.ZERO), x.gcd(0))
-            XCTAssertEqual(x.gcd(BInt.ONE), x.gcd(1))
-            XCTAssertEqual(x.gcd(BInt(Int.max)), x.gcd(Int.max))
-            XCTAssertEqual(x.gcd(BInt(Int.min)), x.gcd(Int.min))
-            XCTAssertEqual((-x).gcd(BInt.ZERO), (-x).gcd(0))
-            XCTAssertEqual((-x).gcd(BInt.ONE), (-x).gcd(1))
-            XCTAssertEqual((-x).gcd(BInt(Int.max)), (-x).gcd(Int.max))
-            XCTAssertEqual((-x).gcd(BInt(Int.min)), (-x).gcd(Int.min))
+            #expect(x.gcd(BInt.ZERO) == x.gcd(0))
+            #expect(x.gcd(BInt.ONE) == x.gcd(1))
+            #expect(x.gcd(BInt(Int.max)) == x.gcd(Int.max))
+            #expect(x.gcd(BInt(Int.min)) == x.gcd(Int.min))
+            #expect((-x).gcd(BInt.ZERO) == (-x).gcd(0))
+            #expect((-x).gcd(BInt.ONE) == (-x).gcd(1))
+            #expect((-x).gcd(BInt(Int.max)) == (-x).gcd(Int.max))
+            #expect((-x).gcd(BInt(Int.min)) == (-x).gcd(Int.min))
         }
     }
 
-    // Recursive GCD and Lehmer GCD must give same result
-    func testRecursiveGCD() {
+    @Test func recursiveGcd() {
         var bw = BInt.RECURSIVE_GCD_LIMIT << 6
         for _ in 0 ..< 5 {
             let x = BInt(bitWidth: bw)
             let y = BInt(bitWidth: bw)
-            XCTAssertEqual(x.recursiveGCD(y), x.lehmerGCD(y))
-            XCTAssertEqual(x.recursiveGCD(-y), x.lehmerGCD(-y))
-            XCTAssertEqual((-x).recursiveGCD(y), (-x).lehmerGCD(y))
-            XCTAssertEqual((-x).recursiveGCD(-y), (-x).lehmerGCD(-y))
+            #expect(x.recursiveGCD(y) == x.lehmerGCD(y))
+            #expect(x.recursiveGCD(-y) == x.lehmerGCD(-y))
+            #expect((-x).recursiveGCD(y) == (-x).lehmerGCD(y))
+            #expect((-x).recursiveGCD(-y) == (-x).lehmerGCD(-y))
             bw *= 2
         }
     }

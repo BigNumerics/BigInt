@@ -1,24 +1,16 @@
 //
 //  CRTTest.swift
-//  
+//
 //
 //  Created by Leif Ibsen on 26/04/2023.
 //
 
-import XCTest
+import Testing
 @testable import BigInt
 
-final class CRTTest: XCTestCase {
+@Suite struct CRTTests {
 
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    func doTest1(_ n: Int) {
+    func checkCRTBInt(_ n: Int) {
         var p = [BInt](repeating: BInt.ZERO, count: 4)
         p[0] = BInt.probablePrime(n)
         p[1] = BInt.probablePrime(2 * n)
@@ -34,12 +26,12 @@ final class CRTTest: XCTestCase {
         let x1 = crt.compute(a1)
         let x2 = crt.compute(a2)
         for i in 0 ..< 4 {
-            XCTAssertEqual(x1.mod(p[i]), a1[i].mod(p[i]))
-            XCTAssertEqual(x2.mod(p[i]), a2[i].mod(p[i]))
+            #expect(x1.mod(p[i]) == a1[i].mod(p[i]))
+            #expect(x2.mod(p[i]) == a2[i].mod(p[i]))
         }
     }
 
-    func doTest2(_ n: Int) {
+    func checkCRTInt(_ n: Int) {
         var p = [Int](repeating: 0, count: 4)
         p[0] = (BInt.probablePrime(n)).asInt()!
         p[1] = (BInt.probablePrime(2 * n)).asInt()!
@@ -55,28 +47,28 @@ final class CRTTest: XCTestCase {
         let x1 = crt.compute(a1)
         let x2 = crt.compute(a2)
         for i in 0 ..< 4 {
-            XCTAssertEqual(x1.mod(p[i]), BInt(a1[i]).mod(p[i]))
-            XCTAssertEqual(x2.mod(p[i]), BInt(a2[i]).mod(p[i]))
+            #expect(x1.mod(p[i]) == BInt(a1[i]).mod(p[i]))
+            #expect(x2.mod(p[i]) == BInt(a2[i]).mod(p[i]))
         }
     }
 
-    func test1() {
-        doTest1(50)
-        doTest1(100)
-        doTest1(200)
+    @Test func crtBInt() {
+        checkCRTBInt(50)
+        checkCRTBInt(100)
+        checkCRTBInt(200)
     }
 
-    func test2() {
-        doTest2(20)
+    @Test func crtInt() {
+        checkCRTInt(20)
     }
 
-    func test3() {
+    @Test func crtEdgeCases() {
         let p = [3, 5, 7]
         let a = [Int.min, 0, Int.max]
         let crt = CRT(p)!
         let x = crt.compute(a)
         for i in 0 ..< 3 {
-            XCTAssertEqual(x.mod(p[i]), BInt(a[i]).mod(p[i]))
+            #expect(x.mod(p[i]) == BInt(a[i]).mod(p[i]))
         }
     }
 }

@@ -5,14 +5,12 @@
 //  Created by Leif Ibsen on 09/06/2022.
 //
 
-import XCTest
+import Testing
 @testable import BigInt
 
-class KroneckerTest: XCTestCase {
+@Suite struct KroneckerTests {
 
-    // Wolfram Mathworld - Kronecker Symbol
-    
-    func doTest1(_ a: BInt, _ b: BInt, _ c: BInt, _ d: BInt) {
+    func checkKroneckerBInt(_ a: BInt, _ b: BInt, _ c: BInt, _ d: BInt) {
         let abcd = (a * b).kroneckerSymbol(c * d)
         let acd = a.kroneckerSymbol(c * d)
         let bcd = b.kroneckerSymbol(c * d)
@@ -22,12 +20,12 @@ class KroneckerTest: XCTestCase {
         let bc = b.kroneckerSymbol(c)
         let ad = a.kroneckerSymbol(d)
         let bd = b.kroneckerSymbol(d)
-        XCTAssertEqual(abcd, acd * bcd)
-        XCTAssertEqual(abcd, abc * abd)
-        XCTAssertEqual(abcd, ac * bc * ad * bd)
+        #expect(abcd == acd * bcd)
+        #expect(abcd == abc * abd)
+        #expect(abcd == ac * bc * ad * bd)
     }
 
-    func doTest2(_ a: BInt, _ b: BInt, _ c: Int, _ d: Int) {
+    func checkKroneckerInt(_ a: BInt, _ b: BInt, _ c: Int, _ d: Int) {
         let abcd = (a * b).kroneckerSymbol(c * d)
         let acd = a.kroneckerSymbol(c * d)
         let bcd = b.kroneckerSymbol(c * d)
@@ -37,38 +35,38 @@ class KroneckerTest: XCTestCase {
         let bc = b.kroneckerSymbol(c)
         let ad = a.kroneckerSymbol(d)
         let bd = b.kroneckerSymbol(d)
-        XCTAssertEqual(abcd, acd * bcd)
-        XCTAssertEqual(abcd, abc * abd)
-        XCTAssertEqual(abcd, ac * bc * ad * bd)
+        #expect(abcd == acd * bcd)
+        #expect(abcd == abc * abd)
+        #expect(abcd == ac * bc * ad * bd)
     }
 
-    func doTest(_ a: Int, _ b: Int, _ c: Int, _ d: Int) {
-        doTest1(BInt(a), BInt(b), BInt(c), BInt(d))
-        doTest2(BInt(a), BInt(b), c, d)
+    func checkKronecker(_ a: Int, _ b: Int, _ c: Int, _ d: Int) {
+        checkKroneckerBInt(BInt(a), BInt(b), BInt(c), BInt(d))
+        checkKroneckerInt(BInt(a), BInt(b), c, d)
     }
 
-    func test1() {
-        XCTAssertEqual(BInt.ZERO.kroneckerSymbol(BInt.ZERO), 0)
-        XCTAssertEqual(BInt.ONE.kroneckerSymbol(BInt.ZERO), 1)
-        XCTAssertEqual((-BInt.ONE).kroneckerSymbol(BInt.ZERO), 1)
+    @Test func kroneckerKnownValues() {
+        #expect(BInt.ZERO.kroneckerSymbol(BInt.ZERO) == 0)
+        #expect(BInt.ONE.kroneckerSymbol(BInt.ZERO) == 1)
+        #expect((-BInt.ONE).kroneckerSymbol(BInt.ZERO) == 1)
         for n in 1 ... 100 {
-            XCTAssertEqual(BInt(n).kroneckerSymbol(BInt.ONE), 1)
-            XCTAssertEqual(BInt(-n).kroneckerSymbol(BInt.ONE), 1)
+            #expect(BInt(n).kroneckerSymbol(BInt.ONE) == 1)
+            #expect(BInt(-n).kroneckerSymbol(BInt.ONE) == 1)
         }
         for k in 1 ... 100 {
-            XCTAssertEqual(BInt.ONE.kroneckerSymbol(k), 1)
-            XCTAssertEqual(BInt.ONE.kroneckerSymbol(-k), 1)
+            #expect(BInt.ONE.kroneckerSymbol(k) == 1)
+            #expect(BInt.ONE.kroneckerSymbol(-k) == 1)
         }
     }
 
-    func test2() {
+    @Test func kroneckerRandomValues() {
         let b1000 = BInt(1000)
         for _ in 0 ..< 100 {
             let a = b1000.randomLessThan().asInt()!
             let b = b1000.randomLessThan().asInt()!
             let c = b1000.randomLessThan().asInt()!
             let d = b1000.randomLessThan().asInt()!
-            doTest(a, b, c, d)
+            checkKronecker(a, b, c, d)
         }
     }
 
