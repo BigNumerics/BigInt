@@ -5,70 +5,61 @@
 //  Created by Leif Ibsen on 15/02/2019.
 //
 
-import XCTest
+import Testing
 @testable import BigInt
 
-class KaratsubaTest: XCTestCase {
+@Suite struct KaratsubaTests {
 
-    override func setUp() {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    func test1() {
+    @Test func karatsubaMultiplication() {
         for _ in 0 ..< 10 {
             let a = BInt(bitWidth: (Limbs.KA_THR + 1) * 64)
             let b = BInt(bitWidth: (Limbs.KA_THR + 1) * 64)
             let p = a * b
-            XCTAssertEqual(p, b * a)
+            #expect(p == b * a)
             let (q, r) = p.quotientAndRemainder(dividingBy: a)
-            XCTAssertEqual(q, b)
-            XCTAssertEqual(r, BInt.ZERO)
+            #expect(q == b)
+            #expect(r == BInt.ZERO)
         }
     }
-    
-    func test2() {
+
+    @Test func karatsubaSquaring() {
         for _ in 0 ..< 10 {
             let a = BInt(bitWidth: (Limbs.KA_THR + 1) * 64)
             let p = a ** 2
             let (q, r) = p.quotientAndRemainder(dividingBy: a)
-            XCTAssertEqual(q, a)
-            XCTAssertEqual(r, BInt.ZERO)
+            #expect(q == a)
+            #expect(r == BInt.ZERO)
         }
     }
-    
-    func test3() {
+
+    @Test func karatsubaEdgeCases() {
         let b1 = BInt([0xffffffffffffffff]) << (Limbs.KA_THR * 64)
         let b2 = BInt([0x8000000000000000]) << (Limbs.KA_THR * 64)
-        XCTAssertEqual(b1 * b1, b1 ** 2)
-        XCTAssertEqual(b2 * b2, b2 ** 2)
+        #expect(b1 * b1 == (b1 ** 2))
+        #expect(b2 * b2 == (b2 ** 2))
         let x = b1 * b2
-        XCTAssertEqual(x, b2 * b1)
+        #expect(x == b2 * b1)
         let (q1, r1) = x.quotientAndRemainder(dividingBy: b1)
-        XCTAssertEqual(q1, b2)
-        XCTAssertEqual(r1, BInt.ZERO)
+        #expect(q1 == b2)
+        #expect(r1 == BInt.ZERO)
         let (q2, r2) = x.quotientAndRemainder(dividingBy: b2)
-        XCTAssertEqual(q2, b1)
-        XCTAssertEqual(r2, BInt.ZERO)
+        #expect(q2 == b1)
+        #expect(r2 == BInt.ZERO)
     }
 
-    // Karatsuba and ToomCook must give same result
-    func test4() {
+    @Test func karatsubaVsToomCook() {
         for _ in 0 ..< 10 {
             let a = BInt(bitWidth: (Limbs.KA_THR + 1) * 64)
             let b = BInt(bitWidth: (Limbs.KA_THR + 1) * 64)
             let p = a * b
             let pTC = BInt(a._magnitude.toomCookTimes(b._magnitude))
-            XCTAssertEqual(p, pTC)
+            #expect(p == pTC)
         }
         for _ in 0 ..< 10 {
             let a = BInt(bitWidth: (Limbs.KA_THR + 1) * 64)
             let p = a ** 2
             let pTC = BInt(a._magnitude.toomCookSquare())
-            XCTAssertEqual(p, pTC)
+            #expect(p == pTC)
         }
     }
 

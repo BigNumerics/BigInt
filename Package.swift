@@ -1,4 +1,4 @@
-// swift-tools-version: 5.9
+// swift-tools-version: 6.0
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -8,7 +8,7 @@ let package = Package(
 	platforms: [
 		// required to support StaticBigInt - wish there were a way to fallback to Int
 		.macOS("13.3"), .iOS("16.4"), .tvOS("16.4"), .watchOS("9.4"),
-		.macCatalyst("13.0")
+		.macCatalyst("16.4")
 	],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.

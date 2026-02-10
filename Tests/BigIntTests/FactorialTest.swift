@@ -5,13 +5,13 @@
 //  Created by Leif Ibsen on 19/05/2022.
 //
 
-import XCTest
+import Testing
 @testable import BigInt
 
-class FactorialTest: XCTestCase {
+@Suite struct FactorialTests {
 
     func simpleFac(_ n: Int) -> BInt {
-        XCTAssertTrue(n > 0)
+        precondition(n > 0)
         var x = BInt.ONE
         for i in 1 ... n {
             x *= i
@@ -19,10 +19,10 @@ class FactorialTest: XCTestCase {
         return x
     }
 
-    func test() {
-        XCTAssertEqual(BInt.factorial(0), BInt.ONE)
+    @Test func factorialMatchesNaive() {
+        #expect(BInt.factorial(0) == BInt.ONE)
         for i in 1 ... 1000 {
-            XCTAssertEqual(BInt.factorial(i), simpleFac(i))
+            #expect(BInt.factorial(i) == simpleFac(i))
         }
     }
 

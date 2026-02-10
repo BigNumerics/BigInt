@@ -5,191 +5,191 @@
 //  Created by Leif Ibsen on 25/08/2022.
 //
 
-import XCTest
+import Testing
 @testable import BigInt
 
-class ComparisonTest: XCTestCase {
-    
-    func doTest1(_ a: BInt, _ b: BInt) {
+@Suite struct ComparisonTests {
+
+    func checkBIntComparison(_ a: BInt, _ b: BInt) {
         let eq = a == b
         let ne = a != b
         let lt = a < b
         let le = a <= b
         let gt = a > b
         let ge = a >= b
-        XCTAssertNotEqual(eq, ne)
-        XCTAssertNotEqual(lt, eq || gt)
-        XCTAssertNotEqual(gt, eq || lt)
-        XCTAssertEqual(le, eq || lt)
-        XCTAssertEqual(ge, eq || gt)
+        #expect(eq != ne)
+        #expect(lt != (eq || gt))
+        #expect(gt != (eq || lt))
+        #expect(le == (eq || lt))
+        #expect(ge == (eq || gt))
     }
 
-    func doTest2(_ a: BInt, _ b: Int) {
+    func checkBIntIntComparison(_ a: BInt, _ b: Int) {
         let eq = a == b
         let ne = a != b
         let lt = a < b
         let le = a <= b
         let gt = a > b
         let ge = a >= b
-        XCTAssertNotEqual(eq, ne)
-        XCTAssertNotEqual(lt, eq || gt)
-        XCTAssertNotEqual(gt, eq || lt)
-        XCTAssertEqual(le, eq || lt)
-        XCTAssertEqual(ge, eq || gt)
+        #expect(eq != ne)
+        #expect(lt != (eq || gt))
+        #expect(gt != (eq || lt))
+        #expect(le == (eq || lt))
+        #expect(ge == (eq || gt))
     }
 
-    func doTest3(_ a: Int, _ b: BInt) {
+    func checkIntBIntComparison(_ a: Int, _ b: BInt) {
         let eq = a == b
         let ne = a != b
         let lt = a < b
         let le = a <= b
         let gt = a > b
         let ge = a >= b
-        XCTAssertNotEqual(eq, ne)
-        XCTAssertNotEqual(lt, eq || gt)
-        XCTAssertNotEqual(gt, eq || lt)
-        XCTAssertEqual(le, eq || lt)
-        XCTAssertEqual(ge, eq || gt)
+        #expect(eq != ne)
+        #expect(lt != (eq || gt))
+        #expect(gt != (eq || lt))
+        #expect(le == (eq || lt))
+        #expect(ge == (eq || gt))
     }
 
-    func test1() {
-        doTest1(BInt.ZERO, BInt.ZERO)
+    @Test func bintComparisons() {
+        checkBIntComparison(BInt.ZERO, BInt.ZERO)
         for _ in 0 ..< 10 {
             let a = BInt(bitWidth: 100)
             let b = BInt(bitWidth: 100)
-            doTest1(a, a)
-            doTest1(a, -a)
-            doTest1(-a, a)
-            doTest1(-a, -a)
-            doTest1(a, b)
-            doTest1(a, -b)
-            doTest1(-a, b)
-            doTest1(-a, -b)
+            checkBIntComparison(a, a)
+            checkBIntComparison(a, -a)
+            checkBIntComparison(-a, a)
+            checkBIntComparison(-a, -a)
+            checkBIntComparison(a, b)
+            checkBIntComparison(a, -b)
+            checkBIntComparison(-a, b)
+            checkBIntComparison(-a, -b)
         }
     }
 
-    func test2() {
-        doTest2(BInt.ZERO, 0)
+    @Test func bintIntComparisons() {
+        checkBIntIntComparison(BInt.ZERO, 0)
         for _ in 0 ..< 10 {
             let a = BInt(bitWidth: 50)
-            doTest2(a, 0)
-            doTest2(a, 1)
-            doTest2(a, -1)
-            doTest2(a, Int.max)
-            doTest2(a, Int.min)
-            doTest2(-a, 0)
-            doTest2(-a, 1)
-            doTest2(-a, -1)
-            doTest2(-a, Int.max)
-            doTest2(-a, Int.min)
+            checkBIntIntComparison(a, 0)
+            checkBIntIntComparison(a, 1)
+            checkBIntIntComparison(a, -1)
+            checkBIntIntComparison(a, Int.max)
+            checkBIntIntComparison(a, Int.min)
+            checkBIntIntComparison(-a, 0)
+            checkBIntIntComparison(-a, 1)
+            checkBIntIntComparison(-a, -1)
+            checkBIntIntComparison(-a, Int.max)
+            checkBIntIntComparison(-a, Int.min)
         }
     }
-    
-    func test3() {
-        doTest3(0, BInt.ZERO)
+
+    @Test func intBintComparisons() {
+        checkIntBIntComparison(0, BInt.ZERO)
         for _ in 0 ..< 10 {
             let b = BInt(bitWidth: 50)
-            doTest3(0, b)
-            doTest3(1, b)
-            doTest3(-1, b)
-            doTest3(Int.max, b)
-            doTest3(Int.min, b)
-            doTest3(0, -b)
-            doTest3(1, -b)
-            doTest3(-1, -b)
-            doTest3(Int.max, -b)
-            doTest3(Int.min, -b)
+            checkIntBIntComparison(0, b)
+            checkIntBIntComparison(1, b)
+            checkIntBIntComparison(-1, b)
+            checkIntBIntComparison(Int.max, b)
+            checkIntBIntComparison(Int.min, b)
+            checkIntBIntComparison(0, -b)
+            checkIntBIntComparison(1, -b)
+            checkIntBIntComparison(-1, -b)
+            checkIntBIntComparison(Int.max, -b)
+            checkIntBIntComparison(Int.min, -b)
         }
     }
 
-    func doTestEq(_ a: BInt, _ b: BInt) {
+    func checkEqual(_ a: BInt, _ b: BInt) {
         let ia = a.asInt()!
         let ib = b.asInt()!
-        XCTAssertEqual(a == b, ia == b)
-        XCTAssertEqual(a == b, a == ib)
-        XCTAssertEqual(a == -b, ia == -b)
-        XCTAssertEqual(a == -b, a == -ib)
-        XCTAssertEqual(-a == b, -ia == b)
-        XCTAssertEqual(-a == b, -a == ib)
-        XCTAssertEqual(-a == -b, -ia == -b)
-        XCTAssertEqual(-a == -b, -a == -ib)
+        #expect((a == b) == (ia == b))
+        #expect((a == b) == (a == ib))
+        #expect((a == -b) == (ia == -b))
+        #expect((a == -b) == (a == -ib))
+        #expect((-a == b) == (-ia == b))
+        #expect((-a == b) == (-a == ib))
+        #expect((-a == -b) == (-ia == -b))
+        #expect((-a == -b) == (-a == -ib))
     }
 
-    func doTestNe(_ a: BInt, _ b: BInt) {
+    func checkNotEqual(_ a: BInt, _ b: BInt) {
         let ia = a.asInt()!
         let ib = b.asInt()!
-        XCTAssertEqual(a != b, ia != b)
-        XCTAssertEqual(a != b, a != ib)
-        XCTAssertEqual(a != -b, ia != -b)
-        XCTAssertEqual(a != -b, a != -ib)
-        XCTAssertEqual(-a != b, -ia != b)
-        XCTAssertEqual(-a != b, -a != ib)
-        XCTAssertEqual(-a != -b, -ia != -b)
-        XCTAssertEqual(-a != -b, -a != -ib)
+        #expect((a != b) == (ia != b))
+        #expect((a != b) == (a != ib))
+        #expect((a != -b) == (ia != -b))
+        #expect((a != -b) == (a != -ib))
+        #expect((-a != b) == (-ia != b))
+        #expect((-a != b) == (-a != ib))
+        #expect((-a != -b) == (-ia != -b))
+        #expect((-a != -b) == (-a != -ib))
     }
 
-    func doTestLt(_ a: BInt, _ b: BInt) {
+    func checkLessThan(_ a: BInt, _ b: BInt) {
         let ia = a.asInt()!
         let ib = b.asInt()!
-        XCTAssertEqual(a < b, ia < b)
-        XCTAssertEqual(a < b, a < ib)
-        XCTAssertEqual(a < -b, ia < -b)
-        XCTAssertEqual(a < -b, a < -ib)
-        XCTAssertEqual(-a < b, -ia < b)
-        XCTAssertEqual(-a < b, -a < ib)
-        XCTAssertEqual(-a < -b, -ia < -b)
-        XCTAssertEqual(-a < -b, -a < -ib)
+        #expect((a < b) == (ia < b))
+        #expect((a < b) == (a < ib))
+        #expect((a < -b) == (ia < -b))
+        #expect((a < -b) == (a < -ib))
+        #expect((-a < b) == (-ia < b))
+        #expect((-a < b) == (-a < ib))
+        #expect((-a < -b) == (-ia < -b))
+        #expect((-a < -b) == (-a < -ib))
     }
 
-    func doTestLe(_ a: BInt, _ b: BInt) {
+    func checkLessOrEqual(_ a: BInt, _ b: BInt) {
         let ia = a.asInt()!
         let ib = b.asInt()!
-        XCTAssertEqual(a <= b, ia <= b)
-        XCTAssertEqual(a <= b, a <= ib)
-        XCTAssertEqual(a <= -b, ia <= -b)
-        XCTAssertEqual(a <= -b, a <= -ib)
-        XCTAssertEqual(-a <= b, -ia <= b)
-        XCTAssertEqual(-a <= b, -a <= ib)
-        XCTAssertEqual(-a <= -b, -ia <= -b)
-        XCTAssertEqual(-a <= -b, -a <= -ib)
+        #expect((a <= b) == (ia <= b))
+        #expect((a <= b) == (a <= ib))
+        #expect((a <= -b) == (ia <= -b))
+        #expect((a <= -b) == (a <= -ib))
+        #expect((-a <= b) == (-ia <= b))
+        #expect((-a <= b) == (-a <= ib))
+        #expect((-a <= -b) == (-ia <= -b))
+        #expect((-a <= -b) == (-a <= -ib))
     }
 
-    func doTestGt(_ a: BInt, _ b: BInt) {
+    func checkGreaterThan(_ a: BInt, _ b: BInt) {
         let ia = a.asInt()!
         let ib = b.asInt()!
-        XCTAssertEqual(a > b, ia > b)
-        XCTAssertEqual(a > b, a > ib)
-        XCTAssertEqual(a > -b, ia > -b)
-        XCTAssertEqual(a > -b, a > -ib)
-        XCTAssertEqual(-a > b, -ia > b)
-        XCTAssertEqual(-a > b, -a > ib)
-        XCTAssertEqual(-a > -b, -ia > -b)
-        XCTAssertEqual(-a > -b, -a > -ib)
+        #expect((a > b) == (ia > b))
+        #expect((a > b) == (a > ib))
+        #expect((a > -b) == (ia > -b))
+        #expect((a > -b) == (a > -ib))
+        #expect((-a > b) == (-ia > b))
+        #expect((-a > b) == (-a > ib))
+        #expect((-a > -b) == (-ia > -b))
+        #expect((-a > -b) == (-a > -ib))
     }
 
-    func doTestGe(_ a: BInt, _ b: BInt) {
+    func checkGreaterOrEqual(_ a: BInt, _ b: BInt) {
         let ia = a.asInt()!
         let ib = b.asInt()!
-        XCTAssertEqual(a >= b, ia >= b)
-        XCTAssertEqual(a >= b, a >= ib)
-        XCTAssertEqual(a >= -b, ia >= -b)
-        XCTAssertEqual(a >= -b, a >= -ib)
-        XCTAssertEqual(-a >= b, -ia >= b)
-        XCTAssertEqual(-a >= b, -a >= ib)
-        XCTAssertEqual(-a >= -b, -ia >= -b)
-        XCTAssertEqual(-a >= -b, -a >= -ib)
+        #expect((a >= b) == (ia >= b))
+        #expect((a >= b) == (a >= ib))
+        #expect((a >= -b) == (ia >= -b))
+        #expect((a >= -b) == (a >= -ib))
+        #expect((-a >= b) == (-ia >= b))
+        #expect((-a >= b) == (-a >= ib))
+        #expect((-a >= -b) == (-ia >= -b))
+        #expect((-a >= -b) == (-a >= -ib))
     }
 
-    func test4() {
+    @Test func mixedTypeComparisons() {
         for _ in 0 ..< 100 {
             let a = BInt(bitWidth: 50)
             let b = BInt(bitWidth: 50)
-            doTestEq(a, b)
-            doTestNe(a, b)
-            doTestLt(a, b)
-            doTestLe(a, b)
-            doTestGt(a, b)
-            doTestGe(a, b)
+            checkEqual(a, b)
+            checkNotEqual(a, b)
+            checkLessThan(a, b)
+            checkLessOrEqual(a, b)
+            checkGreaterThan(a, b)
+            checkGreaterOrEqual(a, b)
         }
     }
 

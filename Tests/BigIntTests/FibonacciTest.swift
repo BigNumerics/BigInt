@@ -5,14 +5,14 @@
 //  Created by Leif Ibsen on 18/05/2022.
 //
 
-import XCTest
+import Testing
 @testable import BigInt
 
-class FibonacciTest: XCTestCase {
+@Suite struct FibonacciTests {
 
 
     func simpleFib(_ n: Int) -> BInt {
-        XCTAssertTrue(n >= 0)
+        precondition(n >= 0)
         if n == 0 {
             return BInt.ZERO
         } else if n == 1 {
@@ -32,7 +32,7 @@ class FibonacciTest: XCTestCase {
     }
 
     func simpleLucas(_ n: Int) -> BInt {
-        XCTAssertTrue(n >= 0)
+        precondition(n >= 0)
         if n == 0 {
             return BInt.TWO
         } else if n == 1 {
@@ -51,19 +51,19 @@ class FibonacciTest: XCTestCase {
         }
     }
 
-    func testFibonacci() {
+    @Test func fibonacci() {
         for i in 0 ... 1000 {
-            XCTAssertEqual(simpleFib(i), BInt.fibonacci(i))
+            #expect(simpleFib(i) == BInt.fibonacci(i))
             let (a, b) = BInt.fibonacci2(i)
-            XCTAssertEqual(a + b, BInt.fibonacci(i + 2))
+            #expect(a + b == BInt.fibonacci(i + 2))
         }
     }
 
-    func testLucas() {
-        XCTAssertEqual(BInt.lucas(0), BInt.TWO)
+    @Test func lucas() {
+        #expect(BInt.lucas(0) == BInt.TWO)
         for i in 1 ... 1000 {
-            XCTAssertEqual(simpleLucas(i), BInt.lucas(i))
-            XCTAssertEqual(BInt.lucas(i), BInt.fibonacci(i - 1) + BInt.fibonacci(i + 1))
+            #expect(simpleLucas(i) == BInt.lucas(i))
+            #expect(BInt.lucas(i) == BInt.fibonacci(i - 1) + BInt.fibonacci(i + 1))
         }
     }
 
